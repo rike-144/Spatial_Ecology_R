@@ -20,10 +20,13 @@ plot(elia, vale,          # x,y  (leopards dependent on plants)
      pch=19, col="blue",  # pch = symbol full circle = "point character"
      cex = 2)             # cex = size of symbol
                           
-
 plot(elia, vale,          
      pch=19, col="blue",  
      cex = 2,
      xlab = "Forest biomass", ylab = "Leopard abundance") 
+
+-----------------------------------------------------------------------
+
+
 
 
