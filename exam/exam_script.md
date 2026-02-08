@@ -300,6 +300,8 @@ Lake K:
 
 ### 7. Computing a time-series of water content [%] and water area [ha]
 
+**Water content [%] table:**
+
 Manual option:
 ```{r}
 freq(ndwi_F_2015c)                                                         # class 1: 1972 cells; class 2: 1169 cells
@@ -307,6 +309,7 @@ ncell(ndwi_F_2015c)                                                        # tot
 
 perc_F_2015 <- freq(ndwi_F_2015c) / ncell(ndwi_F_2015) * 100
 perc_F_2015                                                                # class 1: 62.6 %; class 2: 37.1 %
+
 # Repeat for all six rasters
 ```
 <p>
@@ -316,7 +319,7 @@ perc_F_2015                                                                # cla
 Alternative: Automated in a for-loop
 
 ```{r}
-rasters <- list(                    # put all 6 classified rasters in a list
+rasters <- list(                                    # put all 6 classified rasters in a list
   K_2015 = ndwi_K_2015c,
   K_2020 = ndwi_K_2020c,
   K_2025 = ndwi_K_2025c,
@@ -325,43 +328,161 @@ rasters <- list(                    # put all 6 classified rasters in a list
   F_2025 = ndwi_F_2025c
 )
 
-results <- list()                   # create an empty vector for the for-loop to fill
+results <- list()                                   # create an empty vector for the for-loop to fill
 
-for (n in names(rasters)) {         # loop over every single raster,
-  r <- rasters[[n]]                 # shorten "rasters[[n]]" to "n"
+for (n in names(rasters)) {                         # loop over every single raster,
+  r <- rasters[[n]]                                 # shorten "rasters[[n]]" to "n"
   
-  f <- freq(r) |> as.data.frame()   # compute frequency and pass to a temporary data frame f
-  total <- ncell(r)                 # compute total cells per raster
+  f <- freq(r) |> as.data.frame()                   # compute frequency and pass to a temporary data frame f
+  total <- ncell(r)                                 # compute total cells per raster
   
-  f$pct <- f$count * 100 / total    # create new column pct and calculate percentage
-  f$lake_year <- n                  # create new column lake_year and put the names from the list inside
+  f$pct <- f$count * 100 / total                    # create new column pct and calculate percentage
+  f$lake_year <- n                                  # create new column lake_year and put the names from the list inside
   
-  results[[n]] <- f                 # add the currently looped df to a list
+  results[[n]] <- f                                 # add the currently looped df to a list
   }
 
-summary_tbl <- do.call(rbind, results)  # convert list to table
+summary_tbl <- do.call(rbind, results)              # convert list to table
 summary_tbl
-str(summary_tbl)
+
+```
+
+
+**Area calculation:**
+
+Area Lake F:
+```{r}
+water_sum_F <- summary_tbl %>%                              # using the dplyr library to extract/subset lake F
+  filter(value == 2) %>%
+  filter(startsWith(lake_year, "F")) %>%
+  select(lake_year, count, pct)
+
+water_sum_F$lake_year <- c("2015", "2020", "2025")          # clean column names in the extracted table
+water_sum_F <- rename(water_sum_F, year = lake_year)
+
+res_m <- res(ndwi_F_2015)                                   # compute pixel resolution
+pixel_size <- res_m[1] * res_m[2]                           # compute pixel size
+
+water_sum_F <- water_sum_F %>%                              # calculate area from pixel size
+  mutate(area_ha = count * pixel_size * 0.0001,
+         area_km2 = count * pixel_size * 1e-6)
+water_sum_F
+
+```
+
+Area Lake K:
+```{r}
+water_sum_K <- summary_tbl %>%
+  filter(value == 2) %>%
+  filter(startsWith(lake_year, "K")) %>%
+  select(lake_year, count, pct)
+
+water_sum_K$lake_year <- c("2015", "2020", "2025")
+water_sum_K <- rename(water_sum_K, year = lake_year)
+water_sum_K
+
+res_m_K <- res(ndwi_K_2015)
+res_m_K
+pixel_size <- res_m_K[1] * res_m_K[2]
+
+water_sum_K <- water_sum_K %>% 
+  mutate(area_ha = count * pixel_size * 0.0001,
+         area_km2 = count * pixel_size * 1e-6)
+water_sum_K
+```
+
+
+### 8. Plotting water area [ha] over time (2015-2025)
+
+Plotting Lake F:
+```{r}
+water_plot_F <- ggplot(water_sum_F, aes(x = as.factor(year), y = area_ha)) + 
+  geom_bar(stat = "identity", 
+           fill = "skyblue3",
+           width = 0.7) +   
+  labs(
+    title = "Time series of water area in Lake Fresdorf",
+    x = "Year",
+    y = "Water area (ha)"
+  ) + 
+  theme_minimal() +    # Clean theme
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 14),    # Center title
+    axis.title = element_text(size = 12),                  # Axis title size
+    axis.text = element_text(size = 10)                    # Axis labels size
+  ) + 
+  scale_y_continuous(limits = c(0, 5))  # Adjust y-axis limits
+
+```
+
+Plotting Lake K:
+```{r}
+water_plot_K <- ggplot(water_sum_K, aes(x = as.factor(year), y = area_ha)) + 
+  geom_bar(stat = "identity", 
+           fill = "slategray2",
+           width = 0.7) +   
+  labs(
+    title = "Time series of water area in Lake Kähnsdorf",
+    x = "Year",
+    y = "Water area (ha)"
+  ) + 
+  theme_minimal() +                                        # Clean theme
+  theme(
+    plot.title = element_text(hjust = 0.5, size = 14),     # Center title
+    axis.title = element_text(size = 12),                  # Axis title size
+    axis.text = element_text(size = 10)                    # Axis labels size
+  ) +
+  scale_y_continuous(limits = c(0, 25))  # Adjust y-axis limits
+
 ```
 
 
 ```{r}
-```
-5. Compute a time-series of water content [%] and water area [ha]
-6. Plot water content change maps and change tables
-7. Create NDWI ridgeline plots
-
-```{r}
+water_plot_F + water_plot_K
 ```
 
+![Water area 2015-2025 both lakes](images/Water_area_timeseries_both.png)
+<p>
+<br>
+</p>
 
-```{r}
-```
+### 9. Water content change maps
 
+<p>
+<br>
+</p>
 
-```{r}
-```
+![Change map F](images/ChangeMap_F_advanced.png)
+![Change map K](images/ChangeMap_K_advanced.png)
 
+<p>
+<br>
+</p>
+
+### 10. Plotting water content change tables
+
+<p>
+<br>
+</p>
+
+HIER TABELLE HIN
+
+<p>
+<br>
+</p>
+
+### 11. Create NDWI ridgeline plots
+
+<p>
+<br>
+</p>
+
+![Ridgeline NDWI both lakes](images/Ridgeline_plot.png)
+![Ridgeline NDVI both lakes](images/Ridgeline_plot_NDVI.png)
+
+<p>
+<br>
+</p>
 
 ```{r}
 ```
