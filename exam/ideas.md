@@ -43,7 +43,8 @@ Lake Fresdorf dried out completely between 2014 and 2024 and is now covered by v
 Output:
 - water extent bar plot over time CHECK
 - classification change map CHECK
-- ndvi ridgeline plot (=vegetation shift/vegetation intrusion)
+- ndwi ridgeline plot (= changes in water content of water bodies) CHECK
+- ndvi ridgeline plot (=vegetation shift/vegetation intrusion) CHECK
 
 **4. Same analysis for Lake S**
 - ...
