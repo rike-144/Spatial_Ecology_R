@@ -572,6 +572,7 @@ As this data relies on NDWI calculations and unsupervised classification, "water
 ```{r}
 chg_tbl <- as.data.frame(freq(changeF2))
 chg_tbl$percentage <- chg_tbl$count * 100 / ncell(changeF2)
+chg_tbl$area_ha <- chg_tbl$count * pixel_area * 0.0001
 chg_tbl
 ```
 <p>
@@ -583,16 +584,17 @@ chg_tbl
 ```{r}
 chg_tbl2 <- as.data.frame(freq(changeK2))
 chg_tbl2$percentage <- chg_tbl2$count * 100 / ncell(changeK2)
+chg_tbl2$area_ha <- chg_tbl2$count * pixel_area * 0.0001
 chg_tbl2
 
 ```
 
-| Category         | Lake | Count | Percentage | Lake | Count | Percentage |
-| ---------------- | ---  | ----- | ---------- | ---  | ----- | ---------- | 
-| Stable non-water | F    | 1802  | 57.2       | K    | 6208  | 51.6       | 
-| Stable water     | F    | 529   | 16.8       | K    | 4747  | 39.5       | 
-| Water gain       | F    | 170   | 5.4        | K    | 0     | 0          | 
-| Water loss       | F    | 640   | 20.3       | K    | 1005  | 8.4        | 
+| Category         | Lake | Count | Percentage | Area in ha | Lake | Count | Percentage | Area in ha |
+| ---------------- | ---  | ----- | ---------- | ---        | ---  | ----- | ---------- | ---        |
+| Stable non-water | F    | 1802  | 57.2       | 6.5        | K    | 6208  | 51.6       | 22.5       |
+| Stable water     | F    | 529   | 16.8       | 1.9        | K    | 4747  | 39.5       | 17.2       |
+| Water gain       | F    | 170   | 5.4        | 0.6        | K    | 0     | 0          | 0          |
+| Water loss       | F    | 640   | 20.3       | 2.3        | K    | 1005  | 8.4        | 3.6        |
 
 
 
@@ -661,14 +663,33 @@ Ridgeline_Fv + Ridgeline_Kv
 <br>
 </p>
 
-*WRITE A FEW SENTENCES HERE*
+*NDWI is meant to detect subtle changes in the water content of water bodies. The NDWI and NDVI ridgeline analyses show a trend of continuing water loss and oncoming vegetation in both lakes.*
+
+<p>
+<br>
+</p>
+
+# Discussion:
+Overall, the analyses conducted in this project are partly contradicting each other and hint at methodological errors that need to be taken into account when attempting to draw conclusions from them.
+
+The NDWI ridgeline plots show that Lake Fresdorf has not gained any water between 2020 and 2015, while the im.classify() classification suggested a varied pattern of water loss and water gain in Lake F, contradicting the ridgeline analysis. This issue is more prominent in Lake F, whilst both analyses showed a slight but steady decline in water area for Lake K.
+
+The explanation behind these issues might be that the classification was unsupervised, meaning that the algorithm defined a new class break on every raster. As the reflectance of Lake Fresdorf was significantly different in 2025 compared to 2015 with a complete shift of land cover, it is likely that the class breaks in these two analyses were completely different, resulting in misleading maps and tables.
+
+The second issue to consider is that the NDWI calculation does not detect an open water surface (NDWI of 0,2 – 1) even in 2015, when sources and satellite images confirm the existence of a lake with a wide open water surface for 2015. This discrepancy suggests further data and/or methodological errors.
 
 <p>
 <br>
 </p>
 
 # Conclusion:
-*WRITE A FEW SENTENCES HERE*
+
+Even though the results are unreliable in terms of absolute values and categories, the project depicts a clear overall trend: Both lakes have lost water over time but seem to follow different hydrological regimes, as their geographical proximity is high but their data is very different. The reflectance data do not allow conclusions about water volume, hence, further data and analyses are needed to assess whether Lake K might be undergoing sediment infilling from below. 
+
+
+<p>
+<br>
+</p>
 
 # References:
 EOS Data Analytics: https://eos.com/make-an-analysis/ndwi/
