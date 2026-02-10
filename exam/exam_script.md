@@ -5,7 +5,7 @@
 
 ## 1. Introduction
 ### Research topic:
-**Comparison of lake water content in two inland lakes over a time period of 10 years**
+**Comparison of lake surface area in two inland lakes over a time period of 10 years**
 <p>
 <br>
 </p>
