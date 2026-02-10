@@ -1,3 +1,15 @@
+Enter, dann Leerzeile:
+<p> text </p>
+text
+
+Enter aber ohne Leerzeile:
+<p> text <br>
+text
+
+<p>
+<br>
+</p>
+
 # Ideas for exam
 
 ## Intro
