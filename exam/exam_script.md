@@ -471,7 +471,7 @@ water_plot_F + water_plot_K
 
 
 
-### 10. Plotting water content change maps
+### 9. Plotting water content change maps
 
 *The summary table and bar chart have quantified the general change in surface water area. To get qualitative information on WHERE these changes have occured, we can use change maps. In this case tha maps display the change between 2015 and 2025:
 
@@ -563,7 +563,7 @@ As this data relies on NDWI calculations and unsupervised classification, "water
 <br>
 </p>
 
-### 9. Water content change tables
+### 10. Water content change tables
 
 *To quantify the change that was depicted above, water change tables were compute. While the maps illustrate spatial patterns of change, these tables quantify the extent of each change category and allow a direct comparison of change magnitudes between the lakes.*
 
