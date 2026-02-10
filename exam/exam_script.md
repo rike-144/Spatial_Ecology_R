@@ -483,17 +483,17 @@ names(Fc) <- c("old", "new")
 
 ?ifel
 changeF2 <- ifel(
-  Fc$old == 1 & Fc$new == 1, 1,                                 # Category 1 (stable non-water) if a pixel was classified as non-water in both years
+  Fc$old == 1 & Fc$new == 1, 1,               # Category 1 (stable non-water) if a pixel was classified as non-water in both years
   ifel(
-    Fc$old == 2 & Fc$new == 2, 2,                               # Category 2 (stable water) if a pixel was classified as water in both years
+    Fc$old == 2 & Fc$new == 2, 2,             # Category 2 (stable water) if a pixel was classified as water in both years
     ifel(
-      Fc$old == 1 & Fc$new == 2, 3,                             # Category 3 (water gain) if a pixel was classified as "non-water" in 2015 and as "water" in 2025
+      Fc$old == 1 & Fc$new == 2, 3,           # Category 3 (water gain) if a pixel was classified as "non-water" in 2015 and as "water" in 2025
       ifel(
-        Fc$old == 2 & Fc$new == 1, 4,                           # Catgeory 4 (water loss) if a pixel was classified as "water" in 2015 and as "non-water" in 2025
+        Fc$old == 2 & Fc$new == 1, 4,         # Catgeory 4 (water loss) if a pixel was classified as "water" in 2015 and as "non-water" in 2025
         NA
       ))))
 
-levels(changeF2) <- data.frame(                                 # assign explanations (strings) to the four categories
+levels(changeF2) <- data.frame(               # assign explanations (strings) to the four categories
   value = 1:4,
   class = c(
     "Stable non-water",
