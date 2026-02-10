@@ -283,6 +283,7 @@ ndwi_K_2025c <- im.classify(ndwi_K_2025, num_clusters=2, custom_colors=cividis(2
 </p>
 
 Lake F:
+From left to right: 2015, 2020, 2025
 ![LakeFclassification](images/LakeF_classification_cividis.png)
 
 <p>
@@ -290,6 +291,7 @@ Lake F:
 </p>
 
 Lake K:
+From left to right: 2015, 2020, 2025
 ![LakeKclassification](images/LakeK_classification_cividis.png)
 
 
