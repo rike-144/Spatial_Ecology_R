@@ -282,7 +282,7 @@ ndwi_K_2025c <- im.classify(ndwi_K_2025, num_clusters=2, custom_colors=cividis(2
 <br>
 </p>
 
-Lake F:
+Lake F: <br>
 From left to right: 2015, 2020, 2025
 ![LakeFclassification](images/LakeF_classification_cividis.png)
 
@@ -290,7 +290,7 @@ From left to right: 2015, 2020, 2025
 <br>
 </p>
 
-Lake K:
+Lake K:<br>
 From left to right: 2015, 2020, 2025
 ![LakeKclassification](images/LakeK_classification_cividis.png)
 
@@ -354,7 +354,7 @@ for (n in names(rasters)) {                         # loop over every single ras
 }
 
 summary_table <- bind_rows(results))                # convert list to table
-summary_tbl                                         # print table
+summary_table                                        # print table
 
 ```
 **Result:**
@@ -473,9 +473,9 @@ water_plot_F + water_plot_K
 
 
 
-### 9. Plotting water content change maps
+### 9. Plotting water area change maps
 
-*The summary table and bar chart have quantified the general change in surface water area. To get qualitative information on WHERE these changes have occured, we can use change maps. In this case tha maps display the change between 2015 and 2025:
+*The summary table and bar chart have quantified the general change in surface water area. To get qualitative information on WHERE these changes have occured, we can use change maps. In this case tha maps display the change between 2015 and 2025:*
 
 **Lake F:**
 
