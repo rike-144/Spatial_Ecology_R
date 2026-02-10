@@ -62,6 +62,7 @@ The shallow Lake Fresdorf, 30 km south of Berlin, has dried out and been taken o
 - high resolution
 - bands 02(red), 03(green), 04(blue) and 08(NIR)
 - UTM zone 33N
+- max 10 % cloud cover
 <p>
 <br>
 </p>
