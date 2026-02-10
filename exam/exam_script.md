@@ -21,7 +21,7 @@ Southern Brandenburg, Germany, ca. 30 km south of Berlin
 **Aerial view:** 
 
 ![Large area](images/Screenshot_large_area_marked.jpg)
-![Zoomed area](images/Screenshot_zoomed.jpg)
+![Zoomed area](images/Screenshot_zoomed_marked.jpg)
 <p>
 <br>
 </p>
@@ -29,7 +29,7 @@ Southern Brandenburg, Germany, ca. 30 km south of Berlin
 
 ### Research background: </p>
 <p> 
-The shallow Lake Fresdorf, 30 km south of Berlin, has dried out and been taken over by vegetation in the last 10 years, now resembling peatland more than the lake it once was. The process has been rapid, vanishing the lake within a decade, and was accelerated by the extremely dry summers of 2018, 2019 and 2020. As the lake was part of a larger chain of lakes in the region, this exam project investigates whether similarly threatening trends can be observed in the nearby Lake Kähnsdorf, only 1.5 km westwards, or if the two lakes follow different hydrological regimes. 
+The shallow Lake Fresdorf, 30 km south of Berlin, has dried out and been taken over by vegetation in the last 10 years, now resembling peatland more than the lake it once was. The process has been rapid, vanishing the lake within a decade, and was accelerated by the extremely dry summers of 2018, 2019 and 2020 (rbb24.de). As the lake was part of a larger chain of lakes in the region, this exam project investigates whether similarly threatening trends can be observed in the nearby Lake Kähnsdorf, only 1.5 km westwards, or if the two lakes follow different hydrological regimes. 
 </p>
 
 <p>
@@ -66,7 +66,7 @@ The shallow Lake Fresdorf, 30 km south of Berlin, has dried out and been taken o
 <br>
 </p>
 
-![Zoomed area](images/SScreenshot_Copernicus.jpg)
+![Screenshot from Copernicus website](images/SScreenshot_Copernicus.jpg)
 
 <p>
 <br>
@@ -293,7 +293,7 @@ Lake K:
 ![LakeKclassification](images/LakeK_classification_2.png)
 
 
-*These images show a clear difference in water area between the two lakes between 2015 and 2025. While Lake K retained its overall shaped and only seems to have gotten a little smaller, Lake F's water area has shifted significatntly in both extent and form.*
+*These images show a clear difference in water area between the two lakes between 2015 and 2025. While Lake K retained its overall shaped and only seems to have gotten a little smaller, Lake F's water area has shifted significantly in both extent and form.*
 <p>
 <br>
 </p>
@@ -328,73 +328,66 @@ rasters <- list(                                    # put all 6 classified raste
   F_2025 = ndwi_F_2025c
 )
 
-results <- list()                                   # create an empty vector for the for-loop to fill
+results <- list()                                   # create an empty list for the for-loop to fill
 
 for (n in names(rasters)) {                         # loop over every single raster,
   r <- rasters[[n]]                                 # shorten "rasters[[n]]" to "n"
   
   f <- freq(r) |> as.data.frame()                   # compute frequency and pass to a temporary data frame f
   total <- ncell(r)                                 # compute total cells per raster
+
+ pixel_area <- prod(res(r))                         # prod() is a terra function that calculates the product of the two values given out by res(),which is the pixel resolution
   
-  f$pct <- f$count * 100 / total                    # create new column pct and calculate percentage
-  f$lake_year <- n                                  # create new column lake_year and put the names from the list inside
+ f <- f %>%                                         # take f, THEN:
+    mutate(                                         # add/edit f's columns
+      percentage = count/total*100,                 
+      area_ha = count * pixel_area * 0.0001,
+      lake = sub("_.*", "", n),                     # extract lake name (string)
+      year = sub(".*_", "", n),                     # extract year (string)
+      class = value                                 # rename column "value" to the more comprehensible "class"
+    ) %>%                                           # THEN
+    select(lake, year, class, percentage, area_ha)  # subset the mentioned columns
   
-  results[[n]] <- f                                 # add the currently looped df to a list
-  }
+  results[[n]] <- f                                 # and add the currently looped data to the final list 
+}
 
-summary_tbl <- do.call(rbind, results)              # convert list to table
-summary_tbl
-
-```
-
-
-**Area calculation:**
-
-Area Lake F:
-```{r}
-water_sum_F <- summary_tbl %>%                              # using the dplyr library to extract/subset lake F
-  filter(value == 2) %>%
-  filter(startsWith(lake_year, "F")) %>%
-  select(lake_year, count, pct)
-
-water_sum_F$lake_year <- c("2015", "2020", "2025")          # clean column names in the extracted table
-water_sum_F <- rename(water_sum_F, year = lake_year)
-
-res_m <- res(ndwi_F_2015)                                   # compute pixel resolution
-pixel_size <- res_m[1] * res_m[2]                           # compute pixel size
-
-water_sum_F <- water_sum_F %>%                              # calculate area from pixel size
-  mutate(area_ha = count * pixel_size * 0.0001,
-         area_km2 = count * pixel_size * 1e-6)
-water_sum_F
+summary_table <- bind_rows(results))                # convert list to table
+summary_tbl                                         # print table
 
 ```
+**Result:**
+| Lake     | Year | Class | Area in ha | Percentage | 
+| ----     | ---- | ----- | ---------- | ---------- | 
+| F        | 2015 | water | 4.2        | 37.1       | 
+| F        | 2020 | water | 1.7        | 15.0       | 
+| F        | 2025 | water | 2.5        | 22.2       | 
 
-Area Lake K:
-```{r}
-water_sum_K <- summary_tbl %>%
-  filter(value == 2) %>%
-  filter(startsWith(lake_year, "K")) %>%
-  select(lake_year, count, pct)
+| Lake     | Year | Class | Area in ha | Percentage | 
+| ----     | ---- | ----- | ---------- | ---------- | 
+| K        | 2015 | water | 20.6       | 47.8       | 
+| K        | 2020 | water | 17.2       | 39.9       | 
+| K        | 2025 | water | 17.0       | 39.5       | 
+<p>
+<br>
+</p>
 
-water_sum_K$lake_year <- c("2015", "2020", "2025")
-water_sum_K <- rename(water_sum_K, year = lake_year)
-water_sum_K
-
-res_m_K <- res(ndwi_K_2015)
-res_m_K
-pixel_size <- res_m_K[1] * res_m_K[2]
-
-water_sum_K <- water_sum_K %>% 
-  mutate(area_ha = count * pixel_size * 0.0001,
-         area_km2 = count * pixel_size * 1e-6)
-water_sum_K
-```
-
+*This for-loop was creatd with the help of AI and the results were checked more manually by subsetting the lakes, calculating percentages, checking the pixel size and converting it to hectar in multiple single steps.*
+<p>
+<br>
+</p>
 
 ### 8. Plotting water area [ha] over time (2015-2025)
 
-Plotting Lake F:
+**Extracting water area of Lake F:**
+```{r}
+  water_sum_F <- summary_table %>%
+    filter(lake == "F", class == 2) %>%       
+    select(year, area_ha, percentage)
+  water_sum_F
+```
+
+
+**Plotting water area of lake F:**
 ```{r}
 water_plot_F <- ggplot(water_sum_F, aes(x = as.factor(year), y = area_ha)) + 
   geom_bar(stat = "identity", 
@@ -415,7 +408,20 @@ water_plot_F <- ggplot(water_sum_F, aes(x = as.factor(year), y = area_ha)) +
 
 ```
 
-Plotting Lake K:
+<p>
+<br>
+</p>
+
+**Extracting water area of Lake K:**
+```{r}
+water_sum_F <- summary_table %>%
+  filter(lake == "K", class == 2) %>%       
+  select(year, area_ha, percentage)
+water_sum_K
+```
+
+**Plotting water area of lake K:**
+
 ```{r}
 water_plot_K <- ggplot(water_sum_K, aes(x = as.factor(year), y = area_ha)) + 
   geom_bar(stat = "identity", 
@@ -446,123 +452,228 @@ water_plot_F + water_plot_K
 <br>
 </p>
 
-### 9. Water content change maps
+*The graphs show the quantitative change in water surface area between 2015, 2020 and 2025 for both lakes. Lake Kähnsdorf shows a slight but steady decline in water area while Lake Fresdorf seems to have lost a large amount of water between 2015 and 2020, but re-gained significant water area in the following years.* 
+<p>
+<br>
+</p>
+
+**Summary table for comparison:**
+
+| Lake     | Year | Class | Area in ha | Percentage | Lake     | Area in ha | Percentage |
+| ----     | ---- | ----- | ---------  | ---------- | ----     | ---------- | ---------- | 
+| F        | 2015 | water | 4.2        | 37.1       | K        | 20.6       | 47.8       |
+| F        | 2020 | water | 1.7        | 15.0       | K        | 17.2       | 39.9       | 
+| F        | 2025 | water | 2.5        | 22.2       | K        | 17.0       | 39.5       |
 
 <p>
 <br>
 </p>
+
+
+
+### 10. Plotting water content change maps
+
+*The summary table and bar chart have quantified the general change in surface water area. To get qualitative information on WHERE these changes have occured, we can use change maps. In this case tha maps display the change between 2015 and 2025:
+
+**Lake F:**
+
+```{r}
+Fc <- c(ndwi_F_2015c, ndwi_F_2025c)
+names(Fc) <- c("old", "new")
+
+?ifel
+changeF2 <- ifel(
+  Fc$old == 1 & Fc$new == 1, 1,                                 # Category 1 (stable non-water) if a pixel was classified as non-water in both years
+  ifel(
+    Fc$old == 2 & Fc$new == 2, 2,                               # Category 2 (stable water) if a pixel was classified as water in both years
+    ifel(
+      Fc$old == 1 & Fc$new == 2, 3,                             # Category 3 (water gain) if a pixel was classified as "non-water" in 2015 and as "water" in 2025
+      ifel(
+        Fc$old == 2 & Fc$new == 1, 4,                           # Catgeory 4 (water loss) if a pixel was classified as "water" in 2015 and as "non-water" in 2025
+        NA
+      ))))
+
+levels(changeF2) <- data.frame(                                 # assign explanations (strings) to the four categories
+  value = 1:4,
+  class = c(
+    "Stable non-water",
+    "Stable water",
+    "Water gain",
+    "Water loss" ))
+
+cols <- c("seagreen3", "steelblue1", "skyblue4", "sienna2")     
+
+plot(
+  changeF2,
+  col = cols,
+  main = "Lake F NDWI Change (2015–2025)"
+)
+
+legend(
+  "topright",
+  legend = levels(changeF2)[[1]]$class,
+  fill = cols,
+  bty = "n"
+)
+
+```
+
+**Lake K:**
+```{r}
+Kc <- c(ndwi_K_2015c, ndwi_K_2025c)
+names(Kc) <- c("old", "new")
+
+changeK2 <- ifel(
+  Kc$old == 1 & Kc$new == 1, 1,   # stable non-water
+  ifel(
+    Kc$old == 2 & Kc$new == 2, 2, # stable water
+    ifel(
+      Kc$old == 1 & Kc$new == 2, 3, # water gain
+      ifel(
+        Kc$old == 2 & Kc$new == 1, 4, # water loss
+        NA
+      ) )))
+
+levels(changeK2) <- data.frame(
+  value = 1:4,
+  class = c(
+    "Stable non-water",
+    "Stable water",
+    "Water gain",
+    "Water loss"))
+
+plot(
+  changeK2,
+  col = cols,
+  main = "Lake K NDWI Change (2015–2025)"
+)
+```
+
+<p>
+<br>
+</p>
+
 
 ![Change map F](images/ChangeMap_F_advanced.png)
 ![Change map K](images/ChangeMap_K_advanced.png)
 
+*The change maps show that Lake K has lost surface water area in a circular pattern along the shore. Lake F, in contrast, has lost water in the Eastern part of the lake but gained some water West of the 2015 water surface. 
+As this data relies on NDWI calculations and unsupervised classification, "water" area does not necessarily equal an open water surface but may also represent waterlogged vegetated area.*
 <p>
 <br>
 </p>
 
-### 10. Plotting water content change tables
+### 9. Water content change tables
+
+*To quantify the change that was depicted above, water change tables were compute. While the maps illustrate spatial patterns of change, these tables quantify the extent of each change category and allow a direct comparison of change magnitudes between the lakes.*
+
+**Lake F:**
+
+```{r}
+chg_tbl <- as.data.frame(freq(changeF2))
+chg_tbl$percentage <- chg_tbl$count * 100 / ncell(changeF2)
+chg_tbl
+```
+<p>
+<br>
+</p>
+
+**Lake K:**
+
+```{r}
+chg_tbl2 <- as.data.frame(freq(changeK2))
+chg_tbl2$percentage <- chg_tbl2$count * 100 / ncell(changeK2)
+chg_tbl2
+
+```
+
+| Category         | Lake | Count | Percentage | Lake | Count | Percentage |
+| ---------------- | ---  | ----- | ---------- | ---  | ----- | ---------- | 
+| Stable non-water | F    | 1802  | 57.2       | K    | 6208  | 51.6       | 
+| Stable water     | F    | 529   | 16.8       | K    | 4747  | 39.5       | 
+| Water gain       | F    | 170   | 5.4        | K    | 0     | 0          | 
+| Water loss       | F    | 640   | 20.3       | K    | 1005  | 8.4        | 
+
+
+
 
 <p>
 <br>
 </p>
 
-HIER TABELLE HIN
+### 11. Create ridgeline plots
+
+*Ridgeline plots were used to compare the distributions of NDWI and NDVI values across different years, allowing changes in surface water and vegetation conditions to be assessed over time.*
 
 <p>
 <br>
 </p>
 
-### 11. Create NDWI ridgeline plots
+**NDWI ridgeline plots:**
+```{r}
+ndwi_F <- c(ndwi_F_2015, ndwi_F_2020, ndwi_F_2025)
+Ridgeline_F <- im.ridgeline(ndwi_F,
+             scale=1,
+             palette = "mako") + ggtitle("NDWI time series in Lake Fresdorf")
 
+ndwi_K <- c(ndwi_K_2015, ndwi_K_2020, ndwi_K_2025)
+Ridgeline_K <- im.ridgeline(ndwi_K,
+             scale=1,
+             palette = "mako") + ggtitle("NDWI time series in Lake Kähnsdorf")
+
+Ridgeline_F + Ridgeline_K
+```
 <p>
 <br>
 </p>
 
 ![Ridgeline NDWI both lakes](images/Ridgeline_plot.png)
+
+<p>
+<br>
+</p>
+
+**NDVI ridgeline plots:**
+
+```{r}
+ndvi_F <- c(ndvi_F_2015, ndvi_F_2020, ndvi_F_2025)
+ndvi_F
+Ridgeline_Fv <- im.ridgeline(ndvi_F,
+                  scale=1,
+                  palette = "viridis") + ggtitle("NDVI time series in Lake Fresdorf")
+
+ndvi_K <- c(ndvi_K_2015, ndvi_K_2020, ndvi_K_2025)
+ndvi_K
+Ridgeline_Kv <- im.ridgeline(ndvi_K,
+                  scale=1,
+                  palette = "viridis") + ggtitle("NDVI time series in Lake Kähnsdorf")
+
+Ridgeline_Fv + Ridgeline_Kv
+```
+
+<p>
+<br>
+</p>
+
 ![Ridgeline NDVI both lakes](images/Ridgeline_plot_NDVI.png)
 
 <p>
 <br>
 </p>
 
-```{r}
-```
+*WRITE A FEW SENTENCES HERE*
 
+<p>
+<br>
+</p>
 
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
-
-
-```{r}
-```
+# Conclusion:
+*WRITE A FEW SENTENCES HERE*
 
 # References:
 EOS Data Analytics: https://eos.com/make-an-analysis/ndwi/
 
+RBB24: https://www.rbb24.de/panorama/beitrag/2024/08/brandenburg-potsdam-mittelmark-fresdorf-fresdorfer-see-trockenheit-umwelt-wassermangel-wassermanagement.html
+
 Sentinel Hub: https://custom-scripts.sentinel-hub.com/custom-scripts/sentinel-2/ndvi/
 
-```{r}
-```
