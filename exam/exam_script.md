@@ -263,15 +263,14 @@ v1K + v2K + v3K
 
 
 ```{r}
-colours2 <- c("burlywood2", "aquamarine3")
 
-ndwi_F_2015c <- im.classify(ndwi_F_2015, num_clusters=2, custom_colors=colours2) 
-ndwi_F_2020c <- im.classify(ndwi_F_2020, num_clusters=2, custom_colors=colours2) 
-ndwi_F_2025c <- im.classify(ndwi_F_2025, num_clusters=2, custom_colors=colours2)
+ndwi_F_2015c <- im.classify(ndwi_F_2015, num_clusters=2, custom_colors=cividis(2)) 
+ndwi_F_2020c <- im.classify(ndwi_F_2020, num_clusters=2, custom_colors=cividis(2)) 
+ndwi_F_2025c <- im.classify(ndwi_F_2025, num_clusters=2, custom_colors=cividis(2))
 
-ndwi_K_2015c <- im.classify(ndwi_K_2015, num_clusters=2, custom_colors=colours2)
-ndwi_K_2020c <- im.classify(ndwi_K_2020, num_clusters=2, custom_colors=colours2)
-ndwi_K_2025c <- im.classify(ndwi_K_2025, num_clusters=2, custom_colors=colours2)
+ndwi_K_2015c <- im.classify(ndwi_K_2015, num_clusters=2, custom_colors=cividis(2))
+ndwi_K_2020c <- im.classify(ndwi_K_2020, num_clusters=2, custom_colors=cividis(2))
+ndwi_K_2025c <- im.classify(ndwi_K_2025, num_clusters=2, custom_colors=cividis(2))
 ```
 <p>
 <br>
@@ -283,14 +282,14 @@ ndwi_K_2025c <- im.classify(ndwi_K_2025, num_clusters=2, custom_colors=colours2)
 </p>
 
 Lake F:
-![LakeFclassification](images/LakeF_classification_2.png)
+![LakeFclassification](images/LakeF_classification_cividis.png)
 
 <p>
 <br>
 </p>
 
 Lake K:
-![LakeKclassification](images/LakeK_classification_2.png)
+![LakeKclassification](images/LakeK_classification_cividis.png)
 
 
 *These images show a clear difference in water area between the two lakes between 2015 and 2025. While Lake K retained its overall shaped and only seems to have gotten a little smaller, Lake F's water area has shifted significantly in both extent and form.*
@@ -499,9 +498,7 @@ levels(changeF2) <- data.frame(               # assign explanations (strings) to
     "Stable non-water",
     "Stable water",
     "Water gain",
-    "Water loss" ))
-
-cols <- c("seagreen3", "steelblue1", "skyblue4", "sienna2")     
+    "Water loss" ))  
 
 plot(
   changeF2,
@@ -512,7 +509,7 @@ plot(
 legend(
   "topright",
   legend = levels(changeF2)[[1]]$class,
-  fill = cols,
+  fill = plasma(4),
   bty = "n"
 )
 
@@ -544,7 +541,7 @@ levels(changeK2) <- data.frame(
 
 plot(
   changeK2,
-  col = cols,
+  col = plasma(4),
   main = "Lake K NDWI Change (2015–2025)"
 )
 ```
@@ -554,8 +551,8 @@ plot(
 </p>
 
 
-![Change map F](images/ChangeMap_F_advanced.png)
-![Change map K](images/ChangeMap_K_advanced.png)
+![Change map F](images/ChangeMap_F_plasma.png)
+![Change map K](images/ChangeMap_K_plasma2.png)
 
 *The change maps show that Lake K has lost surface water area in a circular pattern along the shore. Lake F, in contrast, has lost water in the Eastern part of the lake but gained some water West of the 2015 water surface. 
 As this data relies on NDWI calculations and unsupervised classification, "water" area does not necessarily equal an open water surface but may also represent waterlogged vegetated area.*
