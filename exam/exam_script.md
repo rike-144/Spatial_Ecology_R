@@ -672,7 +672,7 @@ Ridgeline_Fv + Ridgeline_Kv
 # Discussion:
 Overall, the analyses conducted in this project are partly contradicting each other and hint at methodological errors that need to be taken into account when attempting to draw conclusions from them.
 
-The NDWI ridgeline plots show that Lake Fresdorf has not gained any water between 2020 and 2015, while the im.classify() classification suggested a varied pattern of water loss and water gain in Lake F, contradicting the ridgeline analysis. This issue is more prominent in Lake F, whilst both analyses showed a slight but steady decline in water area for Lake K.
+The NDWI ridgeline plots show that Lake Fresdorf has not gained any water between 2020 and 2025, while the im.classify() classification suggested a varied pattern of water loss and water gain in Lake F, contradicting the ridgeline analysis. This issue is more prominent in Lake F, whilst both analyses showed a slight but steady decline in water area for Lake K.
 
 The explanation behind these issues might be that the classification was unsupervised, meaning that the algorithm defined a new class break on every raster. As the reflectance of Lake Fresdorf was significantly different in 2025 compared to 2015 with a complete shift of land cover, it is likely that the class breaks in these two analyses were completely different, resulting in misleading maps and tables.
 
